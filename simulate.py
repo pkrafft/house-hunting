@@ -1,5 +1,6 @@
 import sys
 import random
+import numpy as np
 
 # assuming no failures for now
 
@@ -74,7 +75,7 @@ class Colony:
                 if pop >= self.quorum_size:
                     quorum = True
         
-        return t
+        return (t,self.site_pops)
 
     def explore(self, i):
         if random.random() < self.search_prob:
@@ -108,6 +109,7 @@ class Colony:
 if __name__ == '__main__':
 
     rand = bool(sys.argv[1])
+    output = sys.argv[2]
 
     n_iter = 1000
     sizes = range(1,21)
@@ -115,6 +117,10 @@ if __name__ == '__main__':
         ave = 0
         for i in range(n_iter):
             colony = Colony(size, rand)
-            ave += colony.main()
+            t,pops = colony.main()
+            if output == 'time':
+                ave += t
+            if output == 'split':
+                ave += sum(np.array(pops) == colony.quorum_size) > 1
         ave = float(ave)/n_iter
         print size,ave
