@@ -15,7 +15,8 @@ random = read.table('../output/random-split.out')
 equal = read.table('../output/equal-split.out')
 
 pdf('../plots/splitprob.pdf')
-plot(random, type = 'l', ylim = c(0,1),
+ylim = c(min(c(random[,2],equal[,2])), max(c(random[,2],equal[,2])))
+plot(random, type = 'l', ylim = ylim,
      xlab = 'number of sites', ylab = 'probability of multiple sites reaching a quorum',
      main = '100 ants, 0.01 search prob, quorum size 10')
 lines(equal, lty = 2)
