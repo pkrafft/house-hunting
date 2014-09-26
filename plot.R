@@ -1,3 +1,4 @@
+require("ggplot2")
 
 random = read.table('../output/random-time.out')
 equal = read.table('../output/equal-time.out')
@@ -22,3 +23,17 @@ plot(random, type = 'l', ylim = ylim,
 lines(equal, lty = 2)
 legend('bottomright', c('random qualities','equal qualities'), lty = c(1,2))
 dev.off()
+
+data = read.table('../output/equal-complete-time.out')
+split = read.table('../output/equal-complete-split.out')
+data = cbind(data, split[,3])
+colnames(data) = c("sites", "quorum", "time", 'split')
+data[,'quorum'] = factor(data[,'quorum'])
+
+ggplot(data=data,
+              aes(x=sites, y=time, colour=quorum)) +
+        geom_line()
+
+ggplot(data=data,
+              aes(x=sites, y=split, colour=quorum)) +
+        geom_line()
