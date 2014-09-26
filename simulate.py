@@ -77,10 +77,10 @@ class Colony:
                             site = random.randint(0, self.n_sites - 1)
                             self.explore(i, site)
                     else:
-                        if len(self.at_home) > 0:
+                        if len(self.at_home) > 1:
                             site = self.ants[i][SITE]
                             if random.random() < self.site_quals[site]:
-                                follower = random.choice(self.at_home.keys())
+                                follower = random.choice(list(set(self.at_home.keys()) - set([i])))
                                 self.recruit(i, follower)
                 elif self.ants[i][LOC] == AT_SITE:
                     site = self.ants[i][SITE]
