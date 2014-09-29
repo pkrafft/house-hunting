@@ -42,7 +42,7 @@ def experiment(n_iter, n_ants, n_sites, search_prob, quorum_size, site_qual, tes
         ave_diff = 'NA'
     prob_split = float(splits)/n_iter
     
-    print n_sites, search_prob, quorum_size, site_qual, ave_time, ave_diff, prob_split
+    print n_ants, n_sites, search_prob, quorum_size, site_qual, ave_time, ave_diff, prob_split
 
 if exp == "sites":
     n_nests = range(1,51)
