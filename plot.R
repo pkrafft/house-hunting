@@ -1,39 +1,18 @@
-require("ggplot2")
 
-random = read.table('../output/random-time.out')
-equal = read.table('../output/equal-time.out')
+data = read.table('../output/qual.out')
+plot(data[,4],data[,5], xlab = "Site Quality", ylab = "Time to Quorum", type = 'l')
+plot(data[,4],data[,6]/data[,5], xlab = "Site Quality", ylab = "Split Time", type = 'l')
 
-pdf('../plots/runtime.pdf')
-ylim = c(min(c(random[,2],equal[,2])), max(c(random[,2],equal[,2])))
-plot(random, type = 'l', ylim = ylim,
-     xlab = 'number of sites', ylab = 'average steps to quorum',
-     main = '100 ants, 0.01 search prob, quorum size 10')
-lines(equal, lty = 2)
-legend('bottomright', c('random qualities','equal qualities'), lty = c(1,2))
-dev.off()
+data = read.table('../output/search.out')
+plot(data[,2],data[,5], xlab = "Search Prob", ylab = "Time to Quorum", type = 'l')
+plot(data[,2],data[,6]/data[,5], xlab = "Search Prob", ylab = "Split Time", type = 'l')
 
-random = read.table('../output/random-split.out')
-equal = read.table('../output/equal-split.out')
+data = read.table('../output/quorum.out')
+plot(data[,3],data[,5], xlab = "Quorum Size", ylab = "Time to Quorum", type = 'l')
+plot(data[,3],data[,6]/data[,5], xlab = "Quorum Size", ylab = "Split Time", type = 'l')
 
-pdf('../plots/splitprob.pdf')
-ylim = c(min(c(random[,2],equal[,2])), max(c(random[,2],equal[,2])))
-plot(random, type = 'l', ylim = ylim,
-     xlab = 'number of sites', ylab = 'probability of multiple sites reaching a quorum',
-     main = '100 ants, 0.01 search prob, quorum size 10')
-lines(equal, lty = 2)
-legend('bottomright', c('random qualities','equal qualities'), lty = c(1,2))
-dev.off()
-
-data = read.table('../output/equal-complete-time.out')
-split = read.table('../output/equal-complete-split.out')
-data = cbind(data, split[,3])
-colnames(data) = c("sites", "quorum", "time", 'split')
-data[,'quorum'] = factor(data[,'quorum'])
-
-ggplot(data=data,
-              aes(x=sites, y=time, colour=quorum)) +
-        geom_line()
-
-ggplot(data=data,
-              aes(x=sites, y=split, colour=quorum)) +
-        geom_line()
+data = read.table('../output/sites.out')
+plot(data[,1],data[,5], xlab = "Number of Sites", ylab = "Time to Quorum", type = 'l')
+plot(data[,1],data[,6]/data[,5], xlab = "Number of Sites", ylab = "Split Time", type = 'l')
+abline(h = 0.5, col = 'red')
+abline(h = 0.25, col = 'red')

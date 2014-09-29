@@ -45,7 +45,7 @@ def experiment(n_iter, n_ants, n_sites, search_prob, quorum_size, site_qual, tes
     print n_sites, search_prob, quorum_size, site_qual, ave_time, ave_diff, prob_split
 
 if exp == "sites":
-    n_nests = range(1,21)
+    n_nests = range(1,51)
     for x in n_nests:
         experiment(n_iter, n_ants, x, search_prob, quorum_size, site_qual)
 
