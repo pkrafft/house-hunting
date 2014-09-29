@@ -7,7 +7,7 @@ exp = sys.argv[1]
 # default values
 n_iter = 1000
 n_ants = 100
-n_sites = 10
+n_sites = 50
 search_prob = 0.05
 quorum_size = 15
 site_qual = 0.5
@@ -63,6 +63,11 @@ if exp == "qual":
     quals = [x/10.0 for x in range(1,10)]
     for x in quals:
         experiment(n_iter, n_ants, n_sites, search_prob, quorum_size, x)
+
+if exp == "ants":
+    ants = [x*20 for x in range(1,21)]
+    for x in ants:
+        experiment(n_iter, x, n_sites, search_prob, quorum_size, site_qual)
 
 if exp == "single":
     experiment(1, n_ants, n_sites, search_prob, quorum_size, site_qual, test = True)

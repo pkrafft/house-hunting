@@ -12,7 +12,8 @@ plot(data[,3],data[,5], xlab = "Quorum Size", ylab = "Time to Quorum", type = 'l
 plot(data[,3],data[,6]/data[,5], xlab = "Quorum Size", ylab = "Split Time", type = 'l')
 
 data = read.table('../output/sites.out')
-plot(data[,1],data[,5], xlab = "Number of Sites", ylab = "Time to Quorum", type = 'l')
-plot(data[,1],data[,6]/data[,5], xlab = "Number of Sites", ylab = "Split Time", type = 'l')
-abline(h = 0.5, col = 'red')
-abline(h = 0.25, col = 'red')
+pdf('../plots/sites-split.pdf')
+plot(data[,1],data[,5], xlab = "Number of Sites", ylab = "Time to Quorum", type = 'l', ylim = c(min(data[,5],data[,6], na.rm = T), max(data[,5],data[,6], na.rm = T)))
+lines(data[,1],data[,6], col = 'red')
+legend('bottomright', c('to first quorum','to second quorum'), lty = 1, col = c('black','red'))
+dev.off()
