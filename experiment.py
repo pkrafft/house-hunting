@@ -1,33 +1,68 @@
+import sys
+import simulate
+import numpy as np
 
-rand = bool(sys.argv[1])
-to_quorum = bool(sys.argv[2])
-output = sys.argv[3]
+exp = sys.argv[1]
 
-#    n_iter = 1000
-n_iter = 1
-n_sites = range(1,21)
-n_sites = [1]
-#    quorum_sizes = [1,2,4,8,16,32,64]
-quorum_sizes = [50]
-for m in n_sites:
-    for q in quorum_sizes:
-        ave = 0
-        reached_quorum = 0
-        split_decision = 0
-        for i in range(n_iter):
-            colony = Colony(m, rand, q, 0.05, 0.6)
-            t,decisions = colony.main(to_quorum)
-            if output == 'time':
-                ave += t
-            if output == 'split':
-                n_decisions = sum(np.array(decisions))
-                if n_decisions > 0:
-                    reached_quorum += 1
-                if n_decisions > 1:
-                    split_decision += 1
-        if output == 'time':
-            ave = float(ave)/n_iter
-        if output == 'split':
-            ave = float(split_decision)/reached_quorum
-        print m,q,ave
+# default values
+n_iter = 1000
+n_ants = 100
+n_sites = 10
+search_prob = 0.05
+quorum_size = 15
+site_qual = 0.5
 
+def experiment(n_iter, n_ants, n_sites, search_prob, quorum_size, site_qual, test = False):
+    
+    ave_time = 0
+    ave_diff = 0
+    times = 0
+    diffs = 0
+    splits = 0
+    
+    for i in range(n_iter):
+        
+        colony = simulate.Colony(n_ants, n_sites, search_prob, quorum_size, site_qual, test = test)
+        decision_times = colony.main()
+        d_times = [decision_times[i] for i in decision_times]
+
+        d_times.sort()
+        if len(d_times) > 0:
+            ave_time += d_times[0]
+            times += 1
+        if len(d_times) > 1:
+            ave_diff += d_times[1] - d_times[0]
+            diffs += 1
+            splits += 1
+    
+    ave_time = float(ave_time)/times
+    if diffs > 0:
+        ave_diff = float(ave_diff)/diffs
+    else:
+        ave_diff = 'NA'
+    prob_split = float(splits)/n_iter
+    
+    print n_sites, search_prob, quorum_size, site_qual, ave_time, ave_diff, prob_split
+
+if exp == "sites":
+    n_nests = range(1,21)
+    for x in n_nests:
+        experiment(n_iter, n_ants, x, search_prob, quorum_size, site_qual)
+
+if exp == "search":
+    probs = [x/20.0 for x in range(1,21)]
+    for x in probs:
+        experiment(n_iter, n_ants, n_sites, x, quorum_size, site_qual)
+
+if exp == "quorum":
+    quorum_sizes = [2**x for x in range(7)]
+    for x in quorum_sizes:
+        experiment(n_iter, n_ants, n_sites, search_prob, x, site_qual)
+
+if exp == "qual":
+    quals = [x/10.0 for x in range(1,10)]
+    for x in quals:
+        experiment(n_iter, n_ants, n_sites, search_prob, quorum_size, x)
+
+if exp == "single":
+    experiment(1, n_ants, n_sites, search_prob, quorum_size, site_qual, test = True)

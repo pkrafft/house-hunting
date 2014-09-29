@@ -1,4 +1,3 @@
-import sys
 import random
 import numpy as np
 import warnings
@@ -25,18 +24,19 @@ class Colony:
     >>> x = c.main(False)
     """
     
-    def __init__(self, n_sites, random_qual, quorum_size, search_prob, site_qual, test = False):
+    def __init__(self, n_ants, n_sites, search_prob, quorum_size, site_qual, test = False):
         
-        self.n_ants  = 100
-        self.search_prob = search_prob
+        self.n_ants  = n_ants
         self.site_quals = [None]*n_sites
         for site in range(n_sites):
-            if random_qual:
+            if site_qual == 'random':
                 self.site_quals[site] = random.betavariate(1,1)
             else:
-                self.site_quals[site] = [site_qual]
+                assert site_qual > 0 and site_qual < 1
+                self.site_quals[site] = site_qual
         self.n_sites = len(self.site_quals)
-        
+        self.search_prob = search_prob        
+
         self.ants = [[AT_HOME, None] for i in range(self.n_ants)]
         
         self.at_home = dict(zip(range(self.n_ants), self.n_ants*[True]))
@@ -47,17 +47,18 @@ class Colony:
         self.going_home = {}
         self.going_to_site = {}
         
-        self.sites_chosen = [False]*self.n_sites
+        self.quorum_times = {}
         
         self.test = test
     
-    def main(self, to_quorum):
+    def main(self):
         
         t = 0        
         quorum = False
+        double_quorum = False
         complete = False
         
-        while not complete:
+        while not (complete and quorum):
 
             t += 1
             if t > MAX_STEPS:
@@ -101,19 +102,27 @@ class Colony:
             
             for site,pop in enumerate(self.at_site):
                 if pop >= self.quorum_size:
+                    if not site in self.quorum_times:
+                        self.quorum_times[site] = t
+                        if quorum:
+                            double_quorum = True
                     quorum = True
-                    self.sites_chosen[site] = True
             for pop in self.know_site:
                 if pop == self.n_ants:
                     complete = True
-
+            
             if self.test:
                 self.test_invariants(1)
+
+            pops = [0]*self.n_sites
+            for i in self.at_home:
+                if self.ants[i][SITE] != None:
+                    pops[self.ants[i][SITE]] += 1
             
-            if to_quorum and quorum:
+            if double_quorum:
                 break
         
-        return (t, self.sites_chosen)
+        return self.quorum_times
 
     def explore(self, i, site):
         assert self.ants[i][SITE] == None
@@ -173,8 +182,7 @@ class Colony:
                     nums_at[a[SITE]] += 1
             assert nums_at == self.at_site
             
-            assert (sum(np.array(nums_at)) + len(self.at_home)) == self.n_ants
-        
+            assert (sum(np.array(nums_at)) + len(self.at_home)) == self.n_ants        
 
 if __name__ == "__main__":
     import doctest
